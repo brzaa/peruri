@@ -1,0 +1,42 @@
+peruri_health_analytics:
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT', 'perfect-operand-436506-n7') }}"
+      dataset: "{{ env_var('DBT_DATASET_DEFAULT', 'analytics_dev') }}"
+      location: "{{ env_var('DBT_LOCATION', 'asia-southeast2') }}"
+      threads: "{{ env_var('DBT_THREADS', '4') | int }}"
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      priority: interactive
+      execution_project: "{{ env_var('GCP_PROJECT', 'perfect-operand-436506-n7') }}"
+    workspace_token:
+      type: bigquery
+      method: oauth-secrets
+      project: "{{ env_var('GCP_PROJECT', 'perfect-operand-436506-n7') }}"
+      dataset: "{{ env_var('DBT_DATASET_DEFAULT', 'analytics_dev') }}"
+      location: "{{ env_var('DBT_LOCATION', 'asia-southeast2') }}"
+      threads: "{{ env_var('DBT_THREADS', '4') | int }}"
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      priority: interactive
+      execution_project: "{{ env_var('GCP_PROJECT', 'perfect-operand-436506-n7') }}"
+      token: "{{ env_var('DBT_BIGQUERY_ACCESS_TOKEN', '') }}"
+      refresh_token: "{{ env_var('DBT_BIGQUERY_REFRESH_TOKEN', '') }}"
+      client_id: "{{ env_var('DBT_BIGQUERY_CLIENT_ID', '') }}"
+      client_secret: "{{ env_var('DBT_BIGQUERY_CLIENT_SECRET', '') }}"
+      token_uri: "{{ env_var('DBT_BIGQUERY_TOKEN_URI', 'https://oauth2.googleapis.com/token') }}"
+    ci:
+      type: bigquery
+      method: service-account-json
+      project: "{{ env_var('GCP_PROJECT', 'perfect-operand-436506-n7') }}"
+      dataset: "{{ env_var('DBT_DATASET_DEFAULT', 'analytics_ci') }}"
+      location: "{{ env_var('DBT_LOCATION', 'asia-southeast2') }}"
+      threads: "{{ env_var('DBT_THREADS', '4') | int }}"
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      priority: interactive
+      execution_project: "{{ env_var('GCP_PROJECT', 'perfect-operand-436506-n7') }}"
+      keyfile_json: "{{ env_var('DBT_BIGQUERY_KEYFILE_JSON') }}"
+  target: dev

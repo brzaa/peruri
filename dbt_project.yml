@@ -1,0 +1,34 @@
+name: peruri_health_analytics
+version: 1.0.0
+config-version: 2
+
+profile: peruri_health_analytics
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  peruri_health_analytics:
+    +persist_docs:
+      relation: true
+      columns: true
+    staging:
+      +schema: staging
+      +materialized: view
+    marts:
+      +schema: marts
+      +materialized: table
+
+seeds:
+  peruri_health_analytics:
+    +quote_columns: false
+    raw:
+      +schema: raw
+

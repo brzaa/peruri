@@ -1,0 +1,158 @@
+version: 2
+
+models:
+  - name: dim_patient
+    description: Patient dimension with demographic and enrollment context.
+    columns:
+      - name: patient_key
+        description: Surrogate key for the patient dimension.
+        data_tests:
+          - not_null
+          - unique
+      - name: patient_id
+        description: Patient business key.
+        data_tests:
+          - not_null
+          - unique
+
+  - name: dim_facility
+    description: Facility dimension with type and geographic context.
+    columns:
+      - name: facility_key
+        description: Surrogate key for the facility dimension.
+        data_tests:
+          - not_null
+          - unique
+      - name: facility_id
+        description: Facility business key.
+        data_tests:
+          - not_null
+          - unique
+      - name: facility_type
+        description: Facility type used in the volume and diagnosis queries.
+        data_tests:
+          - not_null
+
+  - name: dim_date
+    description: Date dimension covering the fixed 2024-2025 project window.
+    columns:
+      - name: date_key
+        description: Integer date key in YYYYMMDD format.
+        data_tests:
+          - not_null
+          - unique
+      - name: date_day
+        description: Calendar date value.
+        data_tests:
+          - not_null
+          - unique
+
+  - name: dim_diagnosis
+    description: Diagnosis dimension with grouped analytic categories.
+    columns:
+      - name: diagnosis_key
+        description: Surrogate key for the diagnosis dimension.
+        data_tests:
+          - not_null
+          - unique
+      - name: diagnosis_code
+        description: Diagnosis code used for the analytic grain.
+        data_tests:
+          - not_null
+          - unique
+      - name: diagnosis_group
+        description: Simplified diagnosis group for the diagnosis mix query.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - diabetes
+                  - hypertension
+                  - tuberculosis
+                  - respiratory infection
+                  - maternal/child
+                  - cardiovascular
+                  - renal
+                  - gastrointestinal
+
+  - name: fct_encounter
+    description: Encounter fact table at one row per encounter, partitioned by admission_date.
+    columns:
+      - name: encounter_key
+        description: Surrogate key for the encounter fact.
+        data_tests:
+          - not_null
+          - unique
+      - name: patient_key
+        description: Patient dimension key referenced by the encounter.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_patient')
+                field: patient_key
+      - name: facility_key
+        description: Facility dimension key referenced by the encounter.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facility')
+                field: facility_key
+      - name: admission_date
+        description: Partition column for time-series encounter analysis.
+        data_tests:
+          - not_null
+      - name: admission_date_key
+        description: Date dimension key for the admission date.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+  - name: fct_diagnosis_event
+    description: Diagnosis fact table at one row per encounter-diagnosis event, partitioned by diagnosis_event_date.
+    columns:
+      - name: diagnosis_event_key
+        description: Surrogate key for the diagnosis event fact.
+        data_tests:
+          - not_null
+          - unique
+      - name: encounter_key
+        description: Encounter fact key referenced by the diagnosis event.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_encounter')
+                field: encounter_key
+      - name: facility_key
+        description: Facility dimension key used for clustered filtering.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facility')
+                field: facility_key
+      - name: diagnosis_key
+        description: Diagnosis dimension key used for clustered filtering.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_diagnosis')
+                field: diagnosis_key
+      - name: diagnosis_event_date
+        description: Partition column for diagnosis trend analysis.
+        data_tests:
+          - not_null
+      - name: diagnosis_type
+        description: Primary versus secondary diagnosis flag.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['primary', 'secondary']

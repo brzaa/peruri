@@ -1,0 +1,41 @@
+name: dbt-ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  parse-and-test:
+    runs-on: ubuntu-latest
+    env:
+      DBT_PROFILES_DIR: ${{ github.workspace }}/profiles
+      GCP_PROJECT: ${{ vars.GCP_PROJECT || 'perfect-operand-436506-n7' }}
+      DBT_DATASET_DEFAULT: ${{ vars.DBT_DATASET_DEFAULT || 'analytics_ci' }}
+      DBT_LOCATION: ${{ vars.DBT_LOCATION || 'asia-southeast2' }}
+      DBT_THREADS: "4"
+      DBT_BIGQUERY_KEYFILE_JSON: ${{ secrets.DBT_BIGQUERY_KEYFILE_JSON }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate raw CSVs
+        run: python scripts/generate_synthetic_data.py
+
+      - name: Parse dbt project
+        run: dbt parse --profiles-dir profiles
+
+      - name: Full dbt test when BigQuery secret is available
+        if: ${{ secrets.DBT_BIGQUERY_KEYFILE_JSON != '' }}
+        run: |
+          dbt seed --profiles-dir profiles --target ci --full-refresh
+          dbt build --profiles-dir profiles --target ci

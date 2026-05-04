@@ -1,0 +1,151 @@
+version: 2
+
+sources:
+  - name: raw_healthcare
+    description: BPJS-inspired synthetic raw healthcare tables loaded through dbt seeds.
+    schema: raw
+    tables:
+      - name: raw_patient
+        description: Synthetic patient master table with 4,000 members.
+      - name: raw_facility
+        description: Synthetic facility master table with 25 facilities across 5 types.
+      - name: raw_encounter
+        description: Synthetic encounter table with 10,000 visits.
+      - name: raw_diagnosis
+        description: Synthetic diagnosis events with one primary and zero to two secondary codes per encounter.
+
+models:
+  - name: stg_patients
+    description: Cleaned patient dimension input keyed by patient_id.
+    columns:
+      - name: patient_id
+        description: Stable patient business key from the raw layer.
+        data_tests:
+          - not_null
+          - unique
+      - name: gender
+        description: Binary sex marker used in the synthetic source data.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['L', 'P']
+      - name: birth_date
+        description: Date of birth used to derive age bands.
+        data_tests:
+          - not_null
+
+  - name: stg_facilities
+    description: Cleaned facility master data with fixed facility-type categories.
+    columns:
+      - name: facility_id
+        description: Stable facility business key from the raw layer.
+        data_tests:
+          - not_null
+          - unique
+      - name: facility_type
+        description: Facility type fixed to the project scope.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Rumah Sakit Umum
+                  - Rumah Sakit Khusus
+                  - Puskesmas
+                  - Klinik
+                  - Laboratorium
+
+  - name: stg_encounters
+    description: Cleaned encounter facts at one row per encounter.
+    columns:
+      - name: encounter_id
+        description: Stable encounter business key from the raw layer.
+        data_tests:
+          - not_null
+          - unique
+      - name: patient_id
+        description: Patient business key for the encounter.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_patients')
+                field: patient_id
+      - name: facility_id
+        description: Facility business key for the encounter.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_facilities')
+                field: facility_id
+      - name: admission_date
+        description: Admission or visit date used for partitioning and volume analysis.
+        data_tests:
+          - not_null
+      - name: discharge_date
+        description: Discharge date used for LOS calculations.
+        data_tests:
+          - not_null
+      - name: payer_type
+        description: High-level payer category used for basic segmentation.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - JKN PBI
+                  - JKN Mandiri
+                  - Asuransi Swasta
+                  - Umum
+      - name: class_of_care
+        description: Simplified class-of-care field for encounter context.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Kelas 1
+                  - Kelas 2
+                  - Kelas 3
+                  - Rawat Jalan
+
+  - name: stg_diagnoses
+    description: Cleaned diagnosis events at one row per encounter-diagnosis.
+    columns:
+      - name: diagnosis_event_id
+        description: Stable diagnosis event business key from the raw layer.
+        data_tests:
+          - not_null
+          - unique
+      - name: encounter_id
+        description: Encounter business key referenced by the diagnosis event.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_encounters')
+                field: encounter_id
+      - name: diagnosis_type
+        description: Primary versus secondary diagnosis marker.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['primary', 'secondary']
+      - name: diagnosis_group
+        description: Simplified diagnosis grouping used for portfolio analytics.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - diabetes
+                  - hypertension
+                  - tuberculosis
+                  - respiratory infection
+                  - maternal/child
+                  - cardiovascular
+                  - renal
+                  - gastrointestinal

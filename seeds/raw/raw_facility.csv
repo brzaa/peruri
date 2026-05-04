@@ -1,0 +1,26 @@
+facility_id,facility_name,facility_type,city,province,ownership_type
+FAC-001,RSU Hardiansyah Jakarta Selatan,Rumah Sakit Umum,Jakarta Selatan,DKI Jakarta,Pemerintah
+FAC-002,RSU Prasetyo Jakarta Timur,Rumah Sakit Umum,Jakarta Timur,DKI Jakarta,Pemerintah
+FAC-003,RSU Simanjuntak Bandung,Rumah Sakit Umum,Bandung,Jawa Barat,Swasta
+FAC-004,RSU Budiman Bekasi,Rumah Sakit Umum,Bekasi,Jawa Barat,Pemerintah
+FAC-005,RSU Latupono Bogor,Rumah Sakit Umum,Bogor,Jawa Barat,Pemerintah
+FAC-006,RSK Halim Surabaya,Rumah Sakit Khusus,Surabaya,Jawa Timur,Pemerintah
+FAC-007,RSK Suryono Malang,Rumah Sakit Khusus,Malang,Jawa Timur,BUMN
+FAC-008,RSK Habibi Semarang,Rumah Sakit Khusus,Semarang,Jawa Tengah,Swasta
+FAC-009,RSK Lestari Yogyakarta,Rumah Sakit Khusus,Yogyakarta,DI Yogyakarta,BUMN
+FAC-010,RSK Megantara Solo,Rumah Sakit Khusus,Solo,Jawa Tengah,Pemerintah
+FAC-011,PKM Palastri Denpasar,Puskesmas,Denpasar,Bali,Swasta
+FAC-012,PKM Nashiruddin Makassar,Puskesmas,Makassar,Sulawesi Selatan,BUMN
+FAC-013,PKM Dabukke Medan,Puskesmas,Medan,Sumatera Utara,Pemerintah
+FAC-014,PKM Hasanah Palembang,Puskesmas,Palembang,Sumatera Selatan,BUMN
+FAC-015,PKM Mardhiyah Balikpapan,Puskesmas,Balikpapan,Kalimantan Timur,Pemerintah
+FAC-016,KLN Sihombing Jakarta Selatan,Klinik,Jakarta Selatan,DKI Jakarta,Pemerintah
+FAC-017,KLN Prayoga Jakarta Timur,Klinik,Jakarta Timur,DKI Jakarta,Swasta
+FAC-018,KLN Nababan Bandung,Klinik,Bandung,Jawa Barat,BUMN
+FAC-019,KLN Pratiwi Bekasi,Klinik,Bekasi,Jawa Barat,BUMN
+FAC-020,KLN Saefullah Bogor,Klinik,Bogor,Jawa Barat,Swasta
+FAC-021,LAB Situmorang Surabaya,Laboratorium,Surabaya,Jawa Timur,Pemerintah
+FAC-022,LAB Saragih Malang,Laboratorium,Malang,Jawa Timur,Pemerintah
+FAC-023,LAB Siregar Semarang,Laboratorium,Semarang,Jawa Tengah,BUMN
+FAC-024,LAB Novitasari Yogyakarta,Laboratorium,Yogyakarta,DI Yogyakarta,Swasta
+FAC-025,LAB Halim Solo,Laboratorium,Solo,Jawa Tengah,Swasta

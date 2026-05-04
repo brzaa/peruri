@@ -1,0 +1,16 @@
+.venv/
+.gcloud/
+target/
+dbt_packages/
+logs/
+*.pyc
+__pycache__/
+.DS_Store
+assets/*.log
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+profiles/.user.yml
